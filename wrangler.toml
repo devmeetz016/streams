@@ -1,0 +1,19 @@
+name = "k-client-streams"
+main = "src/index.ts"
+compatibility_date = "2025-04-30"
+
+[observability]
+enabled = true
+
+[[migrations]]
+tag = "v1"
+new_classes = ["StreamConsumer"]
+
+
+[[durable_objects.bindings]]
+name = "STREAMCONSUMER"
+class_name = "StreamConsumer"
+[vars]
+UPSTASH_REDIS_URL = 'https://learning-caribou-32038.upstash.io'
+UPSTASH_REDIS_TOKEN = 'AX0mAAIjcDE1NmViMzk1M2Y3YTg0YTE0OTc2MWNjODA2MmRlNjIyNXAxMA'
+UPSTASH_REDIS_STREAM_NAME = 'k-stream'
