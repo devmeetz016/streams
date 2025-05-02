@@ -16,6 +16,11 @@ export class StreamConsumer implements DurableObject {
 		this.isRunning = false;
 		this.lastId = '0';
 	}
+	async print(latency:number,id:string,data:any){
+		console.log('Latency (ms):', latency);
+		console.log('ID:', id);
+		console.log('Data:', data);
+	}
 	async readFromStream() {
 		try {
 			const messages: any = await this.redis.xread(this.env.UPSTASH_REDIS_STREAM_NAME, this.lastId);
@@ -34,10 +39,7 @@ export class StreamConsumer implements DurableObject {
 					const timestamp = Number(timestampStr);
 					const now = Date.now();
 					const latency = now - timestamp;
-
-					console.log('Latency (ms):', latency);
-					console.log('ID:', id);
-					console.log('Data:', data);
+					this.print(latency,id,data);
 					this.lastId = id; //last id
 				}
 			} else {
@@ -54,7 +56,6 @@ export class StreamConsumer implements DurableObject {
 		if (this.isRunning) return;
 
 		this.isRunning = true;
-		console.log('Starting continuous Redis polling...');
 		while (this.isRunning) {
 			console.log('Reading from Redis stream...');
 			await this.readFromStream();
@@ -70,7 +71,7 @@ export class StreamConsumer implements DurableObject {
 	//incase we want to setop
 	async stopContinuousPolling() {
 		this.isRunning = false;
-		console.log('Stopped continuous Redis polling.');
+		console.log("stop polling....")
 	}
 
 	async fetch(request: Request) {
