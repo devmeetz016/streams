@@ -1,6 +1,6 @@
 import { readFromStream } from "./service/redisService";
 import {Env} from "./types/env";
-import {StreamConsumer} from "./service/redisQueueService";
+import {StreamConsumer} from "./service/consumerService";
 
 
 const redisTest=async ()=>{

@@ -3,5 +3,7 @@ export interface Env{
     UPSTASH_REDIS_TOKEN:string;
     UPSTASH_REDIS_STREAM_NAME:string;
     STREAMCONSUMER:DurableObjectNamespace
-    
+    NATS_CRED:string
+    NATS_CRED_KEY_SEED:string
+    NATS_CRED_JWT:string
 }

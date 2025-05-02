@@ -17,6 +17,9 @@
 		"wrangler": "^4.13.2"
 	},
 	"dependencies": {
-		"@upstash/redis": "^1.34.8"
+		"@nats-io/jetstream": "^3.0.2",
+		"@upstash/redis": "^1.34.8",
+		"nats": "^2.29.3",
+		"nats.ws": "^1.30.3"
 	}
 }
