@@ -1,14 +1,19 @@
 import { Redis } from '@upstash/redis/cloudflare';
 import { Env } from '../types/env';
 import { connect, StringCodec, credsAuthenticator, AckPolicy, JetStreamClient } from 'nats.ws';
-
+import { connect as connectSocket } from 'cloudflare:sockets';
+import { createClient } from 'redis';
+import { streamConsumerInGroup } from './consumerGroup';
+import { streamConsumer } from './consumer';
 export class StreamConsumer implements DurableObject {
 	private natsConnection: any;
 	private jetstream: any | null = null;
+	private dragonflyConnection: Socket | null = null;
 	redis: Redis;
 	isRunning: boolean;
 	env: Env;
 	lastId: string;
+	count: number=0;
 	nc: any = null;
 	consumer: string = 'k-consumer';
 	initPromise: Promise<void>;
@@ -61,6 +66,12 @@ SUALLF4C7KFA4F5PD7ZXWQTVFLJU5FZJFGFQZNDUXIPLU3XURHGF7ROWBM
 		}
 	}
 
+	async readFromDragonfly() {
+		this.count++;
+		await streamConsumerInGroup(this.count);
+		// await streamConsumer();
+	}
+
 	async readFromRedisStream() {
 		try {
 			const messages: any = await this.redis.xread(this.env.UPSTASH_REDIS_STREAM_NAME, this.lastId);
@@ -81,7 +92,7 @@ SUALLF4C7KFA4F5PD7ZXWQTVFLJU5FZJFGFQZNDUXIPLU3XURHGF7ROWBM
 					this.lastId = id;
 				}
 			} else {
-				console.log('No new messages.');
+				console.log('No new messages from redis streams.');
 			}
 			return messages;
 		} catch (error) {
@@ -97,8 +108,8 @@ SUALLF4C7KFA4F5PD7ZXWQTVFLJU5FZJFGFQZNDUXIPLU3XURHGF7ROWBM
 			const js: JetStreamClient = await this.nc.jetstream();
 			const consumer = await js.consumers.get('k-stream', this.consumer);
 			const sc = StringCodec();
-			const messages = await consumer.fetch({
-				max_messages: 10,
+			const messages = await consumer.consume({
+				max_messages: 10, // required for consumer.fetch to do batch processing
 				expires: 10000,
 				idle_heartbeat: 1000,
 			});
@@ -142,7 +153,9 @@ SUALLF4C7KFA4F5PD7ZXWQTVFLJU5FZJFGFQZNDUXIPLU3XURHGF7ROWBM
 	}
 
 	async fetch(request: Request) {
-		await this.continuousPolling();
+		// await this.continuousPolling();
+		// await this.readFromJetStream();
+		await this.readFromDragonfly();
 		return new Response('This Durable Object Consumes from streams.');
 	}
 }
