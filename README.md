@@ -25,7 +25,7 @@ The application uses Cloudflare Workers with Durable Objects to maintain state b
    ```
 3. Deploy to Cloudflare:
    ```
-   npm run deploy
+   npx wrangler deploy
    ```
 
 ## Development
