@@ -3,7 +3,7 @@ import {  createClient, RedisClientType } from 'redis';
 import { STREAM_KEY_NAME } from './redis';
 import { randomInRange, sleep } from '../utils';
 
-const CONSUMER_GROUP_NAME = "temphumidity_consumers";
+const CONSUMER_GROUP_NAME = "registrations_consumers";
 const BLOCK_TIME = 5000;
 const MIN_WORK_DURATION = 1000;
 const MAX_WORK_DURATION = 5000;
